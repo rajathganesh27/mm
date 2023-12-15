@@ -1,0 +1,31 @@
+DATA SEGMENT
+    ARR DB 07H, 12H, 23H, 19H, 03H, 31H, 14H, 28H, 16H, 09H   ; Initialize an array 'ARR' with 10 elements
+    LARGEST DB ?                                              ; Declare a byte-sized variable 'LARGEST' without initializing it
+DATA ENDS
+CODE SEGMENT
+    ASSUME CS:CODE, DS:DATA                                   ; Define segment associations
+    START:                                                     ; Entry point for code execution
+        MOV AX, DATA                                           ; Load the address of the DATA segment into AX
+        MOV DS, AX                                             ; Set DS (Data Segment) register to the address in AX
+
+        LEA SI, ARR                                            ; Load the effective address of the array 'ARR' into SI
+        MOV BL, [SI]                                           ; Initialize BL with the first element of 'ARR' (current largest)
+        INC SI                                                 ; Increment the source index SI
+
+        MOV CX, 09H                                            ; Initialize the loop counter to 9 (since the first element is already assigned)
+LP:                                                             ; Label for the loop
+        MOV AL, [SI]                                           ; Load the value at the memory location pointed by SI into AL
+
+        CMP BL, AL                                             ; Compare current largest (BL) with AL
+        JNC NEXT                                                ; Jump to NEXT if AL is not larger than BL
+        MOV BL, AL                                             ; Update BL with the larger value (AL)
+NEXT:
+        INC SI                                                 ; Increment the source index SI
+        LOOP LP                                                ; Continue the loop until CX reaches zero
+
+        MOV LARGEST, BL                                        ; Store the largest value found (BL) into 'LARGEST'
+
+        MOV AH, 4CH                                            ; Set up the DOS interrupt for program termination
+        INT 21H                                                ; Call the DOS interrupt to terminate the program
+CODE ENDS
+END START
